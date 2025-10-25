@@ -1,10 +1,5 @@
 #!/usr/bin/python3
-"""
-Module to fetch and display employee TODO list progress from REST API.
-
-This script retrieves employee information and their TODO list from
-JSONPlaceholder API and displays the completion progress.
-"""
+"""Module to fetch and display employee TODO list progress from REST API."""
 import requests
 import sys
 
