@@ -1,8 +1,6 @@
 #!/usr/bin/python3
-
-"""Export employee TODO list to a CSV file using a REST API.
+"""This module exports employee TODO list to a CSV file using a REST API.
 """
-
 import csv
 import requests
 import sys
