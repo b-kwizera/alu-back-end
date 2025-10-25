@@ -1,5 +1,7 @@
 #!/usr/bin/python3
-"""Module to fetch and display employee TODO list progress from REST API."""
+"""
+Module to fetch and display employee TODO list progress from REST API.
+"""
 
 import requests
 import sys
