@@ -2,6 +2,7 @@
 """Script that returns information about an employee's TODO list progress
 using a REST API.
 """
+
 import requests
 import sys
 
