@@ -1,13 +1,11 @@
 #!/usr/bin/python3
 """ Script that returns information about an employee's TODO list progress. """
-
 import requests
 import sys
 
 
-""" This module returns information about an employee's TODO list progress """
-
 if __name__ == '__main__':
+    """ This module returns information about an employee's TODO list progress """
     user_id = sys.argv[1]
     user_url = "https://jsonplaceholder.typicode.com/users/{}" \
         .format(user_id)
