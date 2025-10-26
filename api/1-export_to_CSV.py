@@ -1,31 +1,29 @@
 #!/usr/bin/python3
-"""This module exports employee TODO list to a CSV file using a REST API.
-"""
+
+''' Export employee TODO list to a CSV file using a REST API.'''
+
 import csv
 import requests
 import sys
 
+if __name__ == '__main__':
+    user_id = sys.argv[1]
+    user_url = "https://jsonplaceholder.typicode.com/users/{}" \
+        .format(user_id)
+    todos_url = "https://jsonplaceholder.typicode.com/users/{}/todos/" \
+        .format(user_id)
 
-if __name__ == "__main__":
-        if len(sys.argv) != 2:
-                    sys.exit(1)
+    user_info = requests.request('GET', user_url).json()
+    todos_info = requests.request('GET', todos_url).json()
 
-                        employee_id = sys.argv[1]
-                            user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
-                                todos_url = f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}"
+    employee_name = user_info["name"]
+    task_completed = list(filter(lambda obj:
+                                 (obj["completed"] is True), todos_info))
+    number_of_done_tasks = len(task_completed)
+    total_number_of_tasks = len(todos_info)
 
-                                    # Fetch data
-                                        user = requests.get(user_url).json()
-                                            todos = requests.get(todos_url).json()
-                                                username = user.get("username")
-
-                                                    # Write CSV file
-                                                        filename = f"{employee_id}.csv"
-                                                            with open(filename, mode="w", newline="") as csv_file:
-                                                                        writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
-                                                                                for task in todos:
-                                                                                                writer.writerow([employee_id,
-                                                                                                                                              username,
-                                                                                                                                              task.get("completed"),
-                                                                                                                                              task.get("title")])
-
+    with open('{}.csv'.format(user_id), 'w') as csvfile:
+        csvwriter = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+        [csvwriter.writerow([user_id, user_info["username"],
+                             task["completed"], task["title"]])
+         for task in todos_info]
