@@ -8,22 +8,27 @@ import sys
 
 
 if __name__ == "__main__":
-    emp_id = int(sys.argv[1])
-    base_url = "https://jsonplaceholder.typicode.com/users"
-    user_url = f"{base_url}/{emp_id}"
-    todos_url = f"{base_url}/{emp_id}/todos"
+    user_id = int(sys.argv[1])
+    todos_url = "https://jsonplaceholder.typicode.com/todos"
+    users_url = "https://jsonplaceholder.typicode.com/users/{}".format(user_id)
 
-    user = requests.get(user_url).json()
-    todos = requests.get(todos_url).json()
+    file_content = []
 
-    emp_username = user.get("username")
+    todo_data = requests.get(todos_url).json()
 
-    with open(f"{emp_id}.csv", "w", newline="") as csv_file:
-        writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
-        for task in todos:
-            writer.writerow([
-                emp_id,
-                emp_username,
-                task.get("completed"),
-                task.get("title")
-            ])
+    employee_name = requests.get(users_url).json()["username"]
+
+    for todo in todo_data:
+        if user_id == todo["userId"]:
+            file_content.append(
+                [str(user_id), employee_name, todo["completed"],
+                 todo["title"]])
+
+    print(file_content)
+    file_name = "{}.csv".format(user_id)
+    with open(file_name, 'w', newline='') as csv_file:
+        write = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
+        for row in file_content:
+            for item in row:
+                str(item)
+            write.writerow(row)
