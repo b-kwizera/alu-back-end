@@ -1,27 +1,29 @@
 #!/usr/bin/python3
-"""
-Using a REST API, and a given emp_ID, return info about their TODO list.
-"""
+""" Script that returns information about an employee's TODO list progress. """
+
 import requests
 import sys
 
 
-if __name__ == "__main__":
-        """ main section """
-            BASE_URL = 'https://jsonplaceholder.typicode.com'
-                employee = requests.get(
-                                BASE_URL + f'/users/{sys.argv[1]}/').json()
-                    EMPLOYEE_NAME = employee.get("name")
-                        employee_todos = requests.get(
-                                        BASE_URL + f'/users/{sys.argv[1]}/todos').json()
-                            serialized_todos = {}
+""" This module returns information about an employee's TODO list progress """
 
-                                for todo in employee_todos:
-                                            serialized_todos.update({todo.get("title"): todo.get("completed")})
+if __name__ == '__main__':
+    user_id = sys.argv[1]
+    user_url = "https://jsonplaceholder.typicode.com/users/{}" \
+        .format(user_id)
+    todos_url = "https://jsonplaceholder.typicode.com/users/{}/todos/" \
+        .format(user_id)
 
-                                                COMPLETED_LEN = len([k for k, v in serialized_todos.items() if v is True])
-                                                    print("Employee {} is done with tasks({}/{}):".format(
-                                                                EMPLOYEE_NAME, COMPLETED_LEN, len(serialized_todos)))
-                                                        for key, val in serialized_todos.items():
-                                                                    if val is True:
-                                                                                    print("\t {}".format(key))
+    user_info = requests.request('GET', user_url).json()
+    todos_info = requests.request('GET', todos_url).json()
+
+    employee_name = user_info["name"]
+    task_completed = list(filter(lambda obj:
+                                 (obj["completed"] is True), todos_info))
+    number_of_done_tasks = len(task_completed)
+    total_number_of_tasks = len(todos_info)
+
+    print("Employee {} is done with tasks({}/{}):".
+          format(employee_name, number_of_done_tasks, total_number_of_tasks))
+
+    [print("\t " + task["title"]) for task in task_completed]
