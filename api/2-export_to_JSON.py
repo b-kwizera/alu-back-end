@@ -1,32 +1,46 @@
 #!/usr/bin/python3
 """
-Export employee TODO list to a JSON file using a REST API.
+Module for exporting employee TODO list to JSON format
 """
+
 import json
 import requests
 import sys
 
 
-if __name__ == "__main__":
-    emp_id = int(sys.argv[1])
-    base_url = "https://jsonplaceholder.typicode.com/users"
-    user_url = f"{base_url}/{emp_id}"
-    todos_url = f"{base_url}/{emp_id}/todos"
-
-    user = requests.get(user_url).json()
-    todos = requests.get(todos_url).json()
-
-    emp_username = user.get("username")
+def export_to_json(employee_id):
+    """
+    Exports employee TODO list to JSON file
+    """
+    base_url = "https://jsonplaceholder.typicode.com"
+    user_response = requests.get(f"{base_url}/users/{employee_id}")
+    user_data = user_response.json()
+    user_id = user_data.get("id")
+    username = user_data.get("username")
+    todos_response = requests.get(f"{base_url}/users/{employee_id}/todos")
+    todos_data = todos_response.json()
     tasks_list = []
-
-    for task in todos:
-        tasks_list.append({
+    for task in todos_data:
+        task_dict = {
             "task": task.get("title"),
             "completed": task.get("completed"),
-            "username": emp_username
-        })
+            "username": username
+        }
+        tasks_list.append(task_dict)
+    json_data = {str(user_id): tasks_list}
+    filename = f"{user_id}.json"
+    with open(filename, 'w') as jsonfile:
+        json.dump(json_data, jsonfile)
+    print(f"Data exported to {filename}")
 
-    data = {str(emp_id): tasks_list}
 
-    with open(f"{emp_id}.json", "w") as json_file:
-        json.dump(data, json_file)
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 2-export_to_JSON.py <employee_id>")
+        sys.exit(1)
+    try:
+        employee_id = int(sys.argv[1])
+        export_to_json(employee_id)
+    except ValueError:
+        print("Error: Employee ID must be an integer")
+        sys.exit(1)
